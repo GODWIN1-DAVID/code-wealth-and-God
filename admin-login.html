@@ -1,0 +1,20 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Admin Login · Godwin Empire</title><link rel="stylesheet" href="style.css"></head><body><main class="section"><div class="container"><div class="panel lock-card"><img src="logo.png" style="width:130px;margin:auto"><div class="eyebrow" style="text-align:center">Restricted area</div><h1 style="text-align:center">Admin Login</h1><p class="muted">Authorized administrators only.</p><form id="adminLoginForm" class="form" autocomplete="off"><div class="form-group"><label>Admin Password</label><input id="adminPassword" name="admin-access-code" type="password" autocomplete="new-password" autocapitalize="none" spellcheck="false" required></div><button class="btn" type="submit">Login</button><a class="btn outline" href="index.html">Back to Website</a></form></div></div></main><div id="toast" class="toast"></div><script>
+const form=document.getElementById('adminLoginForm');
+form.addEventListener('submit',async(e)=>{
+  e.preventDefault();
+  const button=form.querySelector('button[type="submit"]');
+  button.disabled=true;
+  button.textContent='Signing in...';
+  try{
+    const r=await fetch('/api/admin/login',{method:'POST',headers:{'Content-Type':'application/json'},credentials:'include',body:JSON.stringify({password:document.getElementById('adminPassword').value})});
+    const data=await r.json().catch(()=>({}));
+    if(!r.ok) throw new Error(data.error||'Login failed');
+    location.href='admin.html';
+  }catch(err){
+    const t=document.getElementById('toast');
+    if(t){t.textContent=err.message;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000)}
+    button.disabled=false;
+    button.textContent='Login';
+  }
+});
+</script></body></html>
